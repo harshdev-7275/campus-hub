@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String      @id @default(uuid())
+  googleId    String      @unique
+  email       String      @unique
+  name        String
+  username    String?     @unique
+  accessToken String
+  college     String?
+  type        String?
+  location    String?
+  isVerified  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  userProfile UserProfile?
+  posts       Post[]      // One-to-Many: User can have many posts
+  likes       Like[]      // One-to-Many: User can like many posts
+  comments    Comment[]   // One-to-Many: User can comment on many posts
+}
+
+model UserProfile {
+  id          String @id @default(uuid())
+  bio         String?
+  avatarUrl   String?
+  userId      String @unique
+  user        User   @relation(fields: [userId], references: [id])
+}
+
+model Post {
+  id          String    @id @default(uuid())
+  content     String
+  imageUrl    String?
+  videoUrl    String?
+  college     String   //for getting posts related to college
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  likes       Like[]    // One-to-Many: A post can have many likes
+  comments    Comment[] // One-to-Many: A post can have many comments
+}
+
+model Like {
+  id      String  @id @default(uuid())
+  userId  String
+  user    User    @relation(fields: [userId], references: [id])
+  postId  String
+  post    Post    @relation(fields: [postId], references: [id])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+}
+
+model College {
+  id       String  @id @default(uuid())
+  name     String  @unique
+  type     String
+  location String
+}
