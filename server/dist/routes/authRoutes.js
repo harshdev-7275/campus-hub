@@ -38,7 +38,6 @@ router.get("/google/callback", (req, res) => __awaiter(void 0, void 0, void 0, f
         const { id, email, name } = userResponse.data;
         let user = yield prisma_1.prisma.user.findUnique({ where: { googleId: id } });
         if (!user) {
-            console.log("access token", access_token);
             user = yield prisma_1.prisma.user.create({
                 data: {
                     googleId: id,
@@ -49,7 +48,6 @@ router.get("/google/callback", (req, res) => __awaiter(void 0, void 0, void 0, f
             });
         }
         else {
-            console.log("access token", access_token);
             yield prisma_1.prisma.user.update({
                 where: { googleId: id },
                 data: { accessToken: access_token },
@@ -70,7 +68,6 @@ router.get("/google/callback", (req, res) => __awaiter(void 0, void 0, void 0, f
     }
 }));
 router.get("/logout", (req, res) => {
-    console.log("in logout");
     try {
         res.clearCookie("token");
         res.status(201).json({

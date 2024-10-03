@@ -28,7 +28,7 @@ model User {
 model UserProfile {
   id          String @id @default(uuid())
   bio         String?
-  avatarUrl   String?
+  avatarUrl   String? @default("https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg")
   userId      String @unique
   user        User   @relation(fields: [userId], references: [id])
 }
@@ -43,6 +43,7 @@ model Post {
   updatedAt   DateTime  @updatedAt
   user        String?
   username     String?
+  userProfileUrl String?
   authorId    String
   author      User      @relation(fields: [authorId], references: [id])
   likes       Like[]    // One-to-Many: A post can have many likes

@@ -8,8 +8,8 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 
 const getUserData = async (req: Request, res: Response) => {
+
   try {
-    console.log(req.user);
     if (!req.user) {
       return res.status(404).json({
         success: false,
@@ -134,6 +134,7 @@ const getUserProfile = async (req: Request, res: Response) => {
 };
 
 const updateUser = async (req: Request, res: Response) => {
+  console.log("for cors")
   try {
     const userId = req.user?.userId;
     if (!userId) {
@@ -143,7 +144,7 @@ const updateUser = async (req: Request, res: Response) => {
       });
     }
 
-    const { name, username, bio, avatarUrl } = req.body;
+    const { name, username, bio, avatarUrl,type, collegename:college, location } = req.body;
 
     const existingUser = await prisma.user.findUnique({
       where: { id: userId },
@@ -159,6 +160,9 @@ const updateUser = async (req: Request, res: Response) => {
     const userUpdateData: any = {};
     if (name !== undefined) userUpdateData.name = name;
     if (username !== undefined) userUpdateData.username = username;
+    if (college !== undefined) userUpdateData.college = college;
+    if (location !== undefined) userUpdateData.location = location;
+    if(type !== undefined) userUpdateData.type = type;
 
     const userProfileUpdateData: any = {};
     if (bio !== undefined) userProfileUpdateData.bio = bio;
@@ -230,14 +234,11 @@ const updateUser = async (req: Request, res: Response) => {
 const updateUserProfile = async (req: Request, res: Response) => {
   const user = req.user; // Use 'id' from 'req.user'
 
-  console.log("--------userid url", user?.userId);
-  console.log("req.file", req.file);
   try {
     // Check if a file is uploaded (via multer's single upload)
     if (req.file) {
       const fileExtension = path.extname(req.file.originalname);
       const fileName = `${uuidv4()}${fileExtension}`;
-      console.log("--------fle", fileExtension, fileName);
 
       const uploadParams = {
         Bucket: process.env.AWS_S3_BUCKET,
@@ -249,17 +250,14 @@ const updateUserProfile = async (req: Request, res: Response) => {
       const command = new PutObjectCommand(uploadParams);
       const result = await s3Client.send(command);
 
-      console.log("--------result", result);
 
       const s3Url = `https://${uploadParams.Bucket}.s3.amazonaws.com/${fileName}`;
-      console.log("--------s3 url", s3Url);
       // Update the user's profile with the new avatar URL and bio
       const updatedUserProfile = await prisma.userProfile.update({
         where: {
           userId: user?.userId,
         },
         data: {
-          // Optional bio
           avatarUrl: s3Url, // The S3 URL for the avatar image
         },
       });

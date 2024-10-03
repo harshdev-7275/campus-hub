@@ -30,7 +30,6 @@ const getAllColleges = async (req: Request, res: Response) => {
 
 const uploadImage = async (req: Request, res: Response) => {
   try {
-    console.log("req.file", req);
     // Check if a file is uploaded (via multer's single upload)
     if (req.file) {
       const fileExtension = path.extname(req.file.originalname);
@@ -46,10 +45,8 @@ const uploadImage = async (req: Request, res: Response) => {
       const command = new PutObjectCommand(uploadParams);
       const result = await s3Client.send(command);
 
-      console.log("--------result", result);
 
       const s3Url = `https://${uploadParams.Bucket}.s3.amazonaws.com/${fileName}`;
-      console.log("--------s3 url", s3Url);
 
       return res.status(200).json({
         success: true,

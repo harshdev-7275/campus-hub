@@ -9,6 +9,14 @@ import postRoutes from "./routes/postRoutes";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 dotenv.config();
+import { Kafka } from "kafkajs";
+
+
+const kafka = new Kafka({
+  clientId:'campusHubBackend',
+  brokers:["localhost:9092"]
+})
+export const producer = kafka.producer()
 
 const app = express();
 const port = 5000;
@@ -18,8 +26,11 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
+    methods: ["PATCH", "PUT", "GET", "POST"],
+
   })
 );
+
 
 app.use("/auth", authRoutes);
 app.use("/api/user", userRoutes);

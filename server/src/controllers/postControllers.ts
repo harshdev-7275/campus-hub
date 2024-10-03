@@ -1,5 +1,7 @@
 import express, { Request, Response } from "express";
 import { prisma } from "../configs/prisma";
+import { producer } from "..";
+
 
 const getAllPostByCollege = async (req: Request, res: Response) => {
   try {
@@ -12,15 +14,18 @@ const getAllPostByCollege = async (req: Request, res: Response) => {
     const posts = await prisma.post.findMany({
       where: {
         college: String(user?.college),
+        
       },
+    
+      
       orderBy: {
         createdAt: "asc",
       },
+     
     });
     return res.status(200).json({
       success: true,
       posts: posts,
-      length: posts.length,
     });
   } catch (error) {
     console.error(error);
@@ -39,6 +44,11 @@ const createPost = async (req: Request, res: Response) => {
       where: {
         id: req.user?.userId,
       },
+      include:{
+        userProfile:true
+      }
+      
+
     });
     if (!user) {
       return res.status(400).json({
@@ -60,11 +70,17 @@ const createPost = async (req: Request, res: Response) => {
       authorId: req.user?.userId,
       user: user.name,
       username: user.username,
+      userProfileUrl: user?.userProfile?.avatarUrl || ""
     };
     const post = await prisma.post.create({
       data: {
         ...payload,
       },
+    });
+    await producer.connect();
+    await producer.send({
+      topic: "notifications_topic",
+      messages: [{ value: JSON.stringify({ userId: user.id,college:user?.college, message: `New post by ${user.name}` }) }],
     });
 
     return res.status(200).json({

@@ -17,10 +17,9 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
         // Verify the token
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
         if (decoded) {
-            // console.log("Decoded:", decoded);
-            // Attach the decoded user info to the request object
+          
             req.user = decoded as any || {}; 
-            return next(); // Exit the function after calling next()
+            return next(); 
         }
     } catch (error) {
         // If there's an error in token verification (e.g., invalid or expired token)
