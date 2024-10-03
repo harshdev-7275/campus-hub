@@ -5,6 +5,7 @@ import Suggestions from "./Suggestions";
 import { useDispatch, useSelector } from "react-redux";
 import { startLoading, stopLoading } from "../../slices/loadingSlice";
 import Post from "./Post";
+import Notification from "../Notification";
 
 const Feeds = ({}) => {
   const dispatch = useDispatch();
@@ -60,6 +61,7 @@ const Feeds = ({}) => {
 
   return (
     <div className="md:w-[900px]">
+      <Notification/>
       <div className="container w-full mx-auto px-4 flex">
         <div className="w-full">
           <div className="w-full flex items-center justify-between">
