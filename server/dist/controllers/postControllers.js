@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createPost = exports.getAllPostByCollege = void 0;
 const prisma_1 = require("../configs/prisma");
+const __1 = require("..");
 const getAllPostByCollege = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
@@ -30,7 +31,6 @@ const getAllPostByCollege = (req, res) => __awaiter(void 0, void 0, void 0, func
         return res.status(200).json({
             success: true,
             posts: posts,
-            length: posts.length,
         });
     }
     catch (error) {
@@ -43,14 +43,17 @@ const getAllPostByCollege = (req, res) => __awaiter(void 0, void 0, void 0, func
 });
 exports.getAllPostByCollege = getAllPostByCollege;
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b, _c;
+    var _a, _b, _c;
     try {
         const { content, college, imageUrl, videoUrl } = req.body;
         console.log(college);
         const user = yield prisma_1.prisma.user.findUnique({
             where: {
-                id: (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId,
+                id: (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId,
             },
+            include: {
+                userProfile: true
+            }
         });
         if (!user) {
             return res.status(400).json({
@@ -69,12 +72,18 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             college: college,
             imageUrl: imageUrl || "",
             videoUrl: videoUrl || "",
-            authorId: (_c = req.user) === null || _c === void 0 ? void 0 : _c.userId,
+            authorId: (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId,
             user: user.name,
             username: user.username,
+            userProfileUrl: ((_c = user === null || user === void 0 ? void 0 : user.userProfile) === null || _c === void 0 ? void 0 : _c.avatarUrl) || ""
         };
         const post = yield prisma_1.prisma.post.create({
             data: Object.assign({}, payload),
+        });
+        yield __1.producer.connect();
+        yield __1.producer.send({
+            topic: "notifications_topic",
+            messages: [{ value: JSON.stringify({ userId: user.id, college: user === null || user === void 0 ? void 0 : user.college, message: `New post by ${user.name}` }) }],
         });
         return res.status(200).json({
             success: true,

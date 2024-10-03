@@ -43,7 +43,6 @@ const getAllColleges = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.getAllColleges = getAllColleges;
 const uploadImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("req.file", req);
         // Check if a file is uploaded (via multer's single upload)
         if (req.file) {
             const fileExtension = path_1.default.extname(req.file.originalname);
@@ -56,9 +55,7 @@ const uploadImage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             };
             const command = new client_s3_1.PutObjectCommand(uploadParams);
             const result = yield s3Config_1.s3Client.send(command);
-            console.log("--------result", result);
             const s3Url = `https://${uploadParams.Bucket}.s3.amazonaws.com/${fileName}`;
-            console.log("--------s3 url", s3Url);
             return res.status(200).json({
                 success: true,
                 data: s3Url,

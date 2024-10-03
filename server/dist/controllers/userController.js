@@ -21,7 +21,6 @@ const uuid_1 = require("uuid");
 const path_1 = __importDefault(require("path"));
 const getUserData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(req.user);
         if (!req.user) {
             return res.status(404).json({
                 success: false,
@@ -121,11 +120,11 @@ const getCompleteUserData = (req, res) => __awaiter(void 0, void 0, void 0, func
 });
 exports.getCompleteUserData = getCompleteUserData;
 const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+    var _a;
     try {
         const userProfileExist = yield prisma_1.prisma.userProfile.findUnique({
             where: {
-                userId: (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId,
+                userId: (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId,
             },
         });
         if (!userProfileExist) {
@@ -149,16 +148,17 @@ const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.getUserProfile = getUserProfile;
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d;
+    var _a, _b;
+    console.log("for cors");
     try {
-        const userId = (_c = req.user) === null || _c === void 0 ? void 0 : _c.userId;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
         if (!userId) {
             return res.status(400).json({
                 success: false,
                 message: "User ID not provided",
             });
         }
-        const { name, username, bio, avatarUrl } = req.body;
+        const { name, username, bio, avatarUrl, type, collegename: college, location } = req.body;
         const existingUser = yield prisma_1.prisma.user.findUnique({
             where: { id: userId },
         });
@@ -173,6 +173,12 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             userUpdateData.name = name;
         if (username !== undefined)
             userUpdateData.username = username;
+        if (college !== undefined)
+            userUpdateData.college = college;
+        if (location !== undefined)
+            userUpdateData.location = location;
+        if (type !== undefined)
+            userUpdateData.type = type;
         const userProfileUpdateData = {};
         if (bio !== undefined)
             userProfileUpdateData.bio = bio;
@@ -223,7 +229,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     catch (error) {
         console.log("Error updating user and profile:", error);
         if (error.code === "P2002") {
-            const duplicatedField = (_d = error.meta) === null || _d === void 0 ? void 0 : _d.target;
+            const duplicatedField = (_b = error.meta) === null || _b === void 0 ? void 0 : _b.target;
             return res.status(409).json({
                 success: false,
                 message: `${duplicatedField} already exists.`,
@@ -239,14 +245,11 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.updateUser = updateUser;
 const updateUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user; // Use 'id' from 'req.user'
-    console.log("--------userid url", user === null || user === void 0 ? void 0 : user.userId);
-    console.log("req.file", req.file);
     try {
         // Check if a file is uploaded (via multer's single upload)
         if (req.file) {
             const fileExtension = path_1.default.extname(req.file.originalname);
             const fileName = `${(0, uuid_1.v4)()}${fileExtension}`;
-            console.log("--------fle", fileExtension, fileName);
             const uploadParams = {
                 Bucket: process.env.AWS_S3_BUCKET,
                 Key: fileName,
@@ -255,16 +258,13 @@ const updateUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, functi
             };
             const command = new client_s3_1.PutObjectCommand(uploadParams);
             const result = yield s3Config_1.s3Client.send(command);
-            console.log("--------result", result);
             const s3Url = `https://${uploadParams.Bucket}.s3.amazonaws.com/${fileName}`;
-            console.log("--------s3 url", s3Url);
             // Update the user's profile with the new avatar URL and bio
             const updatedUserProfile = yield prisma_1.prisma.userProfile.update({
                 where: {
                     userId: user === null || user === void 0 ? void 0 : user.userId,
                 },
                 data: {
-                    // Optional bio
                     avatarUrl: s3Url, // The S3 URL for the avatar image
                 },
             });
