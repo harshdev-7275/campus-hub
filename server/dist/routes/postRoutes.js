@@ -8,4 +8,5 @@ const postControllers_1 = require("../controllers/postControllers");
 const authMiddleware_1 = require("../middlewares/authMiddleware");
 const router = express_1.default.Router();
 router.get("/get-allPost-by-College", authMiddleware_1.authenticateJWT, postControllers_1.getAllPostByCollege);
+router.post("/create-post", authMiddleware_1.authenticateJWT, postControllers_1.createPost);
 exports.default = router;

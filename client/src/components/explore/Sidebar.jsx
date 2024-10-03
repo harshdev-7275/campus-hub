@@ -8,12 +8,38 @@ import { MdPermMedia } from "react-icons/md";
 import { IoSettings } from "react-icons/io5";
 import axios from "axios";
 import { CiEdit } from "react-icons/ci";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { addUserData } from "../../slices/userSlice";
+import { startLoading } from "../../slices/loadingSlice";
 
 const Sidebar = () => {
   const [userData, setUserData] = useState(null);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState("");
+  const user = useSelector((state) => state.auth.user);
 
+  const dispatch = useDispatch();
+
+  const fetchCompleteUserData = async () => {
+    if (!user) {
+      toast.error("Please login first");
+      return;
+    }
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/helper/get-complete-user-data",
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res.data.data);
+      setUserData(res.data.data);
+      dispatch(addUserData(res.data.data));
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const fetchUserProfile = async () => {
     try {
       const res = await axios.get(
@@ -23,7 +49,7 @@ const Sidebar = () => {
         }
       );
       if (res.data.data) {
-        setUserData(res.data.data);
+        // setUserData(res.data.data);
       }
     } catch (error) {
       console.error(error.response?.data?.message || error.message);
@@ -61,9 +87,13 @@ const Sidebar = () => {
       console.error("Error uploading file", error);
     }
   };
-
+  useEffect(() => {
+    fetchCompleteUserData();
+  }, [file]);
   useEffect(() => {
     fetchUserProfile();
+    // fetchCompleteUserData();
+    console.log("complete", userData);
   }, []);
 
   return (
@@ -82,7 +112,7 @@ const Sidebar = () => {
                 <img
                   src={
                     preview ||
-                    userData?.profilePicture ||
+                    userData?.userProfile?.avatarUrl ||
                     "https://i.pinimg.com/736x/c3/e8/c8/c3e8c8abdfa16c2d577623c8610729f4.jpg"
                   }
                   alt="dp"
@@ -107,7 +137,7 @@ const Sidebar = () => {
 
         <ul className="flex sm:flex-row md:flex-col items-center justify-center w-full md:gap-4">
           <NavLink
-            to="news-feed"
+            to=""
             className="flex items-center sm:gap-2 sm:p-1 md:px-12 w-full md:gap-3 md:p-2 dark:text-white hover:text-white font-medium hover:bg-black dark:hover:bg-white dark:hover:text-gray-900 rounded-md transition-all md:w-full"
           >
             <FaCompass size={20} />

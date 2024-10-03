@@ -41,6 +41,8 @@ model Post {
   college     String   //for getting posts related to college
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  user        String?
+  username     String?
   authorId    String
   author      User      @relation(fields: [authorId], references: [id])
   likes       Like[]    // One-to-Many: A post can have many likes

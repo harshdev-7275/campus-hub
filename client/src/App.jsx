@@ -23,7 +23,7 @@ const App = () => {
         <Route path="/explore/*" element={<Explore />}>
           {/* Nested routes */}
           <Route path="settings" element={<Settings />} />
-          <Route path="news-feed" element={<Feeds />} />
+          <Route path="" element={<Feeds />} />
           <Route path="message" element={<div>Messages Page</div>} />
         </Route>
         <Route element={<PrivateRoutes />}>

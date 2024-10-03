@@ -14,8 +14,18 @@ const Explore = () => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.loading.isLoading);
   const isDarkMode = useSelector((state) => state.theme.isDarkMode);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  return isLoading ? (
+  useEffect(() => {
+    // Show the loading screen for 2 seconds
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer); 
+  }, []);
+
+  return isInitialLoading ? (
     <div
       className={`w-screen h-screen flex justify-center items-center ${
         isDarkMode ? "bg-black" : "bg-white"
