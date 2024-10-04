@@ -62,11 +62,12 @@ const Landing = () => {
       dispatch(loginSuccess(response.data.data));
      setTimeout(() => {
       if(fetchUserData()){
-        navigate("/explore")
-      }else {
         setIsUsername(true);
         setIsCollege(true);
         getColleges();
+      }else {
+        navigate("/explore")
+       
       } 
      }, 2000);
     } catch (error) {
@@ -215,7 +216,8 @@ const Landing = () => {
       const res = await axios.patch(
         "http://localhost:5000/api/user/update-user",
         payload,
-        { withCredentials: true }
+        { withCredentials: true },
+        
       );
 
       console.log(res.data);
@@ -274,10 +276,12 @@ const Landing = () => {
       const res = await axios.get("http://localhost:5000/api/user/get-complete-data", {
         withCredentials:true
       })
-      console.log(res)
-      if(res.data.data.username){
+      console.log("in fetch user datas",res.data.data)
+      if(res?.data?.data?.username === null){
+        console.log("if username is null")
         return true
       }
+      console.log("if username is not null")
       return false
     } catch (error) {
       console.error(error)   

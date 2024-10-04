@@ -18,7 +18,7 @@ const Navbar = () => {
     console.log(AUTH_URL);
     e.preventDefault();
     try {
-      const res = await axios(`${AUTH_URL}/logout`, {
+      const res = await axios(`http://localhost:5000/auth/logout`, {
         withCredentials: true,
       });
 
