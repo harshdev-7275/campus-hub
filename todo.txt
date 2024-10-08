@@ -1,2 +1,6 @@
 1) we need to store the all colleges data in "indexDB"
-2) right now notification is emiited to every user including himself so want to modify to send notification to particular 
+2) right now notification is emiited to every user including himself so want to modify to send notification to particular
+3) need to redsign the whole feed component
+4) try to make it smooth as much as possible
+5) side bar should be up in large screen
+6) side bar should be hamburger type for smaller screen only (important)
