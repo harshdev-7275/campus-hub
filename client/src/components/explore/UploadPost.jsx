@@ -97,64 +97,69 @@ const UploadPost = () => {
     }
   };
 
-  return (
-    <div className="mx-auto bg-gray-300 p-4 rounded-xl text-black dark:text-white dark:bg-gray-700">
-      <form className="container" onSubmit={createPostHandler}>
-        <div className="flex items-center gap-4 p-2">
-          <img
-            src={userData?.userProfile?.avatarUrl}
-            alt="dp"
-            className="w-[2rem] h-[2rem] md:w-[3rem] md:h-[3rem] rounded-full object-cover"
-          />
-          <input
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            type="text"
-            placeholder="Share something..."
-            className="w-full p-2 outline-none bg-white text-black rounded-2xl pl-6 lg:w-[500px]"
-          />
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 p-2">
-            <label className="flex items-center gap-2 text-gray-700 dark:text-white cursor-pointer">
-              <FaVideo size={20} className="font-normal" />
-              <input
-                type="file"
-                accept="video/*"
-                onChange={handleVideoChange}
-                className="hidden"
-              />
-              Video
-            </label>
-            <label className="flex items-center gap-2 text-gray-700 dark:text-white cursor-pointer">
-              <FaImages size={20} className="font-normal" />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-              />
-              Image
-            </label>
-            <button className="flex items-center gap-2 text-gray-700 dark:text-white">
-              <FaLocationArrow size={20} className="font-normal" />
-              Location
-            </button>
-            <button
-              type="submit"
-              className="flex items-center gap-2 text-gray-700 dark:text-white"
-            >
-              <MdOutlinePublic size={20} className="font-normal" />
-              Public
-            </button>
-          </div>
-          <button className="px-7 py-1 bg-black text-white rounded-2xl">
-            Share
-          </button>
-        </div>
-      </form>
-    </div>
-  );
+  // return (
+  //   <div className="mx-auto bg-gray-300 p-4 rounded-xl text-black dark:text-white dark:bg-gray-700 z-50">
+  //     <form className="container" onSubmit={createPostHandler}>
+  //       <div className="flex items-center gap-4 p-2">
+  //         <img
+  //           src={userData?.userProfile?.avatarUrl}
+  //           alt="dp"
+  //           className="w-[2rem] h-[2rem] md:w-[3rem] md:h-[3rem] rounded-full object-cover"
+  //         />
+  //         <input
+  //           value={content}
+  //           onChange={(e) => setContent(e.target.value)}
+  //           type="text"
+  //           placeholder="Share something..."
+  //           className="w-full p-2 outline-none bg-white text-black rounded-2xl pl-6 lg:w-[500px]"
+  //         />
+  //       </div>
+  //       <div className="flex items-center justify-between">
+  //         <div className="flex items-center gap-4 p-2">
+  //           <label className="flex items-center gap-2 text-gray-700 dark:text-white cursor-pointer">
+  //             <FaVideo size={20} className="font-normal" />
+  //             <input
+  //               type="file"
+  //               accept="video/*"
+  //               onChange={handleVideoChange}
+  //               className="hidden"
+  //             />
+  //             Video
+  //           </label>
+  //           <label className="flex items-center gap-2 text-gray-700 dark:text-white cursor-pointer">
+  //             <FaImages size={20} className="font-normal" />
+  //             <input
+  //               type="file"
+  //               accept="image/*"
+  //               onChange={handleImageChange}
+  //               className="hidden"
+  //             />
+  //             Image
+  //           </label>
+  //           <button className="flex items-center gap-2 text-gray-700 dark:text-white">
+  //             <FaLocationArrow size={20} className="font-normal" />
+  //             Location
+  //           </button>
+  //           <button
+  //             type="submit"
+  //             className="flex items-center gap-2 text-gray-700 dark:text-white"
+  //           >
+  //             <MdOutlinePublic size={20} className="font-normal" />
+  //             Public
+  //           </button>
+  //         </div>
+  //         <button className="px-7 py-1 bg-black text-white rounded-2xl">
+  //           Share
+  //         </button>
+  //       </div>
+  //     </form>
+  //   </div>
+  // );
+
+
+  return(
+    <>hello</>
+  )
 };
 
 export default UploadPost;
