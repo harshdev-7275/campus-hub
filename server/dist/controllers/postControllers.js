@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createPost = exports.getAllPostByCollege = void 0;
 const prisma_1 = require("../configs/prisma");
-const __1 = require("..");
 const getAllPostByCollege = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
@@ -80,11 +79,11 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const post = yield prisma_1.prisma.post.create({
             data: Object.assign({}, payload),
         });
-        yield __1.producer.connect();
-        yield __1.producer.send({
-            topic: "notifications_topic",
-            messages: [{ value: JSON.stringify({ userId: user.id, college: user === null || user === void 0 ? void 0 : user.college, message: `New post by ${user.name}` }) }],
-        });
+        // await producer.connect();
+        // await producer.send({
+        //   topic: "notifications_topic",
+        //   messages: [{ value: JSON.stringify({ userId: user.id,college:user?.college, message: `New post by ${user.name}` }) }],
+        // });
         return res.status(200).json({
             success: true,
             post: post,

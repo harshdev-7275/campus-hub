@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 
-import { loginSuccess } from "../slices/authSlice";
+import { loginSuccess, logoutSuccess } from "../slices/authSlice";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../constants";
@@ -37,6 +37,9 @@ const Landing = () => {
           withCredentials: true,
         }
       );
+      if(res.data.statusCode === 401){
+
+      }
 
       if (!res.data.success) {
         throw new Error(res.data.message || "Something went wrong");
@@ -45,7 +48,11 @@ const Landing = () => {
       setColleges(res.data.colleges);
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong!");
+      toast.error(error?.response?.data?.message||"Something went wrong!");
+      navigate("/")
+      setIsUsername(false)
+      setIsCollege(false)
+      dispatch(logoutSuccess())
     }
   };
 
@@ -61,11 +68,12 @@ const Landing = () => {
       toast.success("Login Successful");
       dispatch(loginSuccess(response.data.data));
      setTimeout(() => {
-      if(fetchUserData()){
+      if(fetchUserData() === true){
         setIsUsername(true);
         setIsCollege(true);
         getColleges();
       }else {
+       
         navigate("/explore")
        
       } 

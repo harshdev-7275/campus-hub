@@ -60,7 +60,7 @@ const Feeds = ({}) => {
   };
 
   return (
-    <div className="md:w-[900px]">
+    <div className="md:w-[900px] relative">
       <Notification/>
       <div className="container w-full mx-auto px-4 flex">
         <div className="w-full">
@@ -81,7 +81,7 @@ const Feeds = ({}) => {
                 <h1 className="text-3xl font-bold tracking-widest">NO POSTS</h1>
               </div>
             ) : (
-              <div>
+              <div className="flex flex-col items-center gap-5">
                 {posts.map((post) => (
                   <Post key={post._id} post={post} user={user} />
                 ))}
@@ -89,12 +89,13 @@ const Feeds = ({}) => {
             )}
           </div>
          
-          <div className="fixed -bottom-2 md:w-[900px] flex items-center justify-center">
-            <UploadPost />
-          </div>
+         
         </div>
         <div className="">{/* <Suggestions /> */}</div>
       </div>
+      <div className="absolute md:w-[900px] flex items-center justify-center z-50 top-0 -right-16">
+            <UploadPost />
+          </div>
     </div>
   );
 };
