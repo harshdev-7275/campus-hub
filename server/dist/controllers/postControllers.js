@@ -9,8 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPost = exports.getAllPostByCollege = void 0;
+exports.likePost = exports.getSinglePostById = exports.createPost = exports.getAllPostByCollege = void 0;
 const prisma_1 = require("../configs/prisma");
+const __1 = require("..");
 const getAllPostByCollege = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
@@ -22,6 +23,10 @@ const getAllPostByCollege = (req, res) => __awaiter(void 0, void 0, void 0, func
         const posts = yield prisma_1.prisma.post.findMany({
             where: {
                 college: String(user === null || user === void 0 ? void 0 : user.college),
+            },
+            include: {
+                comments: true,
+                likes: true,
             },
             orderBy: {
                 createdAt: "asc",
@@ -51,8 +56,8 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 id: (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId,
             },
             include: {
-                userProfile: true
-            }
+                userProfile: true,
+            },
         });
         if (!user) {
             return res.status(400).json({
@@ -74,16 +79,24 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             authorId: (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId,
             user: user.name,
             username: user.username,
-            userProfileUrl: ((_c = user === null || user === void 0 ? void 0 : user.userProfile) === null || _c === void 0 ? void 0 : _c.avatarUrl) || ""
+            userProfileUrl: ((_c = user === null || user === void 0 ? void 0 : user.userProfile) === null || _c === void 0 ? void 0 : _c.avatarUrl) || "",
         };
         const post = yield prisma_1.prisma.post.create({
             data: Object.assign({}, payload),
         });
-        // await producer.connect();
-        // await producer.send({
-        //   topic: "notifications_topic",
-        //   messages: [{ value: JSON.stringify({ userId: user.id,college:user?.college, message: `New post by ${user.name}` }) }],
-        // });
+        yield __1.producer.connect();
+        yield __1.producer.send({
+            topic: "notifications_topic",
+            messages: [
+                {
+                    value: JSON.stringify({
+                        userId: user.id,
+                        college: user === null || user === void 0 ? void 0 : user.college,
+                        message: `New post by ${user.name}`,
+                    }),
+                },
+            ],
+        });
         return res.status(200).json({
             success: true,
             post: post,
@@ -99,3 +112,83 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.createPost = createPost;
+const getSinglePostById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { postId } = req.query;
+        if (!postId) {
+            return res.status(204).json({
+                success: false,
+                message: "Id is required",
+            });
+        }
+        const post = yield prisma_1.prisma.post.findUnique({
+            where: {
+                id: postId,
+            },
+            include: {
+                comments: true,
+                likes: true,
+            },
+        });
+        if (!post) {
+            return res.status(200).json({
+                success: false,
+                message: "Post not found",
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            post,
+        });
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+});
+exports.getSinglePostById = getSinglePostById;
+const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { postId } = req.query;
+        const { userId } = req.query;
+        if (!userId || !postId) {
+            return res.status(400).json({
+                success: false,
+                message: "Id is required",
+            });
+        }
+        const likeExists = yield prisma_1.prisma.like.findMany({
+            where: {
+                postId: postId,
+                userId: userId
+            }
+        });
+        if (likeExists.length > 0) {
+            return res.status(200).json({
+                success: false,
+                message: "Already liked",
+            });
+        }
+        const postLike = yield prisma_1.prisma.like.create({
+            data: {
+                postId: postId,
+                userId: userId
+            }
+        });
+        return res.status(200).json({
+            success: true,
+            message: "Post liked successfully",
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+});
+exports.likePost = likePost;

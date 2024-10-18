@@ -1,61 +1,59 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id          String      @id @default(uuid())
-  googleId    String      @unique
-  email       String      @unique
+  id          String       @id @default(uuid())
+  googleId    String       @unique
+  email       String       @unique
   name        String
-  username    String?     @unique
+  username    String?      @unique
   accessToken String
   college     String?
   type        String?
   location    String?
-  isVerified  Boolean     @default(false)
-  createdAt   DateTime    @default(now())
+  isVerified  Boolean      @default(false)
+  createdAt   DateTime     @default(now())
   userProfile UserProfile?
-  posts       Post[]      // One-to-Many: User can have many posts
-  likes       Like[]      // One-to-Many: User can like many posts
-  comments    Comment[]   // One-to-Many: User can comment on many posts
+  
+  posts       Post[]       // One-to-Many: User can have many posts
+  likes       Like[]       // One-to-Many: User can like many posts
+  comments    Comment[]    // One-to-Many: User can comment on many posts
+  friendshipsInitiated RelationTable[] @relation("UserInitiatedRelations") // List of friendships initiated by the user
+  friendshipsReceived RelationTable[] @relation("UserReceivedRelations")  // List of friendships received by the user
 }
-
 model UserProfile {
-  id          String @id @default(uuid())
-  bio         String?
-  avatarUrl   String? @default("https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg")
-  userId      String @unique
-  user        User   @relation(fields: [userId], references: [id])
+  id        String  @id @default(uuid())
+  bio       String?
+  avatarUrl String? @default("https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg")
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id])
 }
 
 model Post {
-  id          String    @id @default(uuid())
-  content     String
-  imageUrl    String?
-  videoUrl    String?
-  college     String   //for getting posts related to college
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  user        String?
-  username     String?
+  id             String    @id @default(uuid())
+  content        String
+  imageUrl       String?
+  videoUrl       String?
+  college        String // for getting posts related to college
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  user           String?
+  username       String?
   userProfileUrl String?
-  authorId    String
-  author      User      @relation(fields: [authorId], references: [id])
-  likes       Like[]    // One-to-Many: A post can have many likes
-  comments    Comment[] // One-to-Many: A post can have many comments
+  authorId       String
+  author         User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes          Like[]    // One-to-Many: A post can have many likes
+  comments       Comment[] // One-to-Many: A post can have many comments
 }
 
 model Like {
-  id      String  @id @default(uuid())
-  userId  String
-  user    User    @relation(fields: [userId], references: [id])
-  postId  String
-  post    Post    @relation(fields: [postId], references: [id])
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model Comment {
@@ -63,14 +61,25 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   postId    String
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model College {
-  id       String  @id @default(uuid())
-  name     String  @unique
+  id       String @id @default(uuid())
+  name     String @unique
   type     String
   location String
 }
+
+model RelationTable {
+  id       String @id @default(uuid())
+  userId   String
+  friendId String
+  initiator User @relation("UserInitiatedRelations", fields: [userId], references: [id]) // User who initiated the relation
+  receiver  User @relation("UserReceivedRelations", fields: [friendId], references: [id]) // User who received the relation
+  @@unique([userId, friendId])
+}
+
+

@@ -20,10 +20,10 @@ const kafka = new Kafka({
 
 const consumer = kafka.consumer({ groupId: "notification_group" });
 
-// Create a WebSocket server
+
 const wss = new WebSocketServer({ noServer: true });
 
-// Array to store connected WebSocket clients, with their college ID
+
 let clients = [];
 
 const runConsumer = async () => {
@@ -82,10 +82,10 @@ server.on("upgrade", (request, socket, head) => {
         console.log("on message",JSON.parse(data), ws)
       const { college } = JSON.parse(data);
 
-      // Add the client to the list with its college ID
+
       clients.push({ ws, college });
 
-      // Handle when the client disconnects
+
       ws.on("close", () => {
         clients = clients.filter((client) => client.ws !== ws);
       });
