@@ -40,11 +40,8 @@ const Explore = () => {
   ) : (
     <div className="w-full min-h-screen dark:bg-black dark:text-white">
       <div className="container mx-auto px-4 sm:px-6 lg:max-w-[1400px] h-full gap-10">
-        <div className="w-full h-full flex sm:flex-col md:flex-row items-center">
-          {/* Sidebar remains unchanged */}
+        <div className="w-full h-full flex sm:flex-col md:flex-row items-center gap-[10rem]">
           <Sidebar />
-
-          {/* Outlet will render the nested routes here */}
           <div className="min-h-[calc(100vh-6rem)] w-full mt-[6rem] lg:mt-[4rem] md:ml-[20%] md:w-[50%] ">
             <Outlet />
           </div>

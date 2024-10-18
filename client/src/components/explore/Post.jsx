@@ -11,15 +11,39 @@ import {
   Forward,
   EllipsisVertical,
 } from "lucide-react";
+import { motion } from "framer-motion";
+import axios from "axios";
 
 const Post = ({ post }) => {
   const user = useSelector((state) => state.user.user);
   const isDarkMode = useSelector((state) => state.theme.isDarkMode);
   console.log("dadad", post, user);
+
+
+  const handleLike= async(e)=>{
+    e.preventDefault();
+    console.log("liked")
+
+    try {
+      const res = await axios.post(`http://localhost:5000/api/posts/like-post?postId=${post?.id}&userId=${user?.id}`, {}, {
+        withCredentials: true,
+      })
+      console.log(res.data)
+
+    } catch (error) {
+      console.error(error)
+
+    }
+  }
+  const handleDisLike=(e)=>{
+    e.preventDefault();
+    console.log("disliked")
+  }
+
   function timeAgo(timestamp) {
     const now = new Date();
     const postDate = new Date(timestamp);
-    const diff = now - postDate; // Difference in milliseconds
+    const diff = now - postDate;
 
     const seconds = Math.floor(diff / 1000);
     const minutes = Math.floor(seconds / 60);
@@ -104,46 +128,67 @@ const Post = ({ post }) => {
   // );
 
   return (
-    <div className="w-[50%] h-[50%]">
+    <motion.div
+      className="w-full h-full"
+      whileInView={{
+        scale: 1.01,
+        transition: { duration: 0.7 },
+      }}
+    >
       {post.imageUrl && (
         <>
           <div className="container mx-auto relative rounded-xl cursor-pointer">
             <img
               src={post?.imageUrl}
               alt=""
-              className="w-full h-full rounded-2xl"
+              className="w-[70%] h-[70%] rounded-2xl"
             />
-            <div className="absolute top-3 left-0 flex items-center justify-between w-full px-3">
-              <div className=" rounded-full flex glass items-center gap-1">
+            <div className="absolute top-0 left-0 flex items-center justify-between w-full">
+              <div className="rounded-l-2xl rounded-r-2xl flex glass items-center gap-1">
                 <img
                   src={post?.userProfileUrl}
                   alt="dp"
                   className="w-10 h-10 rounded-full"
                 />
+
                 <div className="flex flex-col items-start gap-1">
-                  <p className="text-sm font-thin cursor-pointer select-none">{post?.user}</p>
-                  <p className="text-sm font-thin select-none hover:underline cursor-pointer">@{post?.username}</p>
+                  <p className="text-sm font-thin cursor-pointer select-none">
+                    {post?.user}
+                  </p>
+                  <p className="text-sm font-thin select-none hover:underline cursor-pointer">
+                    @{post?.username}
+                  </p>
                 </div>
               </div>
 
-              <button className="glass rounded-full">
-              <EllipsisVertical />
+              <button className="absolute left-[63%] glass rounded-full top-0">
+                <EllipsisVertical />
               </button>
             </div>
-            <div className="absolute bottom-5 flex flex-col gap-1 ml-4 z-50">
+            <div className="absolute bottom-[1px] -left-4 flex flex-col gap-1 ml-4 glass rounded-l-2xl rounded-r-2xl">
+              <h1 className="text-sm tracking-wide z-50">{post?.content}</h1>
               <div className="flex items-center gap-3">
-                <button><Heart className="w-5 h-5" /></button>
-                <button> <MessageCircle className="w-5 h-5" /></button>
-                <button><Forward className="w-5 h-5" /></button>
-              </div>
-              <div>
-                <h1 className="text-sm font-medium tracking-wide">{post?.content}</h1>
+                <div className="flex items-center gap-1">
+                  <button onClick={handleLike} onDoubleClick={handleDisLike}>
+                    <Heart className="w-5 h-5"  />
+                  </button>
+                  <span>{post?.likes.length}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button>
+                    <MessageCircle className="w-5 h-5"  />
+                  </button>
+                  <span>{post?.comments.length}</span>
+                </div>
+                <button>
+                  <Forward className="w-5 h-5" />
+                </button>
               </div>
             </div>
           </div>
         </>
       )}
-    </div>
+    </motion.div>
   );
 };
 

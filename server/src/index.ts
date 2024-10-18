@@ -36,6 +36,7 @@ app.use("/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/helper", helperRoutes);
 
+
 //posts
 app.use("/api/posts", postRoutes);
 
